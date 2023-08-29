@@ -63,6 +63,10 @@ class FlutterCallkitIncoming {
     await _channel.invokeMethod("muteCall", {'id': id, 'isMuted': isMuted});
   }
 
+  static Future reportDeclinedCall(String id) async {
+    await _channel.invokeMethod("reportDeclinedCall", {'id': id});
+  }
+
   /// Hold an Ongoing call.
   /// On iOS, using Callkit(update the ongoing call ui).
   /// On Android, Nothing(only callback event listener).

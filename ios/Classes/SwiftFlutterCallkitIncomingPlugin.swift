@@ -28,7 +28,7 @@ public class SwiftFlutterCallkitIncomingPlugin: NSObject, FlutterPlugin, CXProvi
     
     private var callManager: CallManager
     
-    private var sharedProvider: CXProvider? = nil
+    public var sharedProvider: CXProvider? = nil
     
     private var outgoingCall : Call?
     private var answerCall : Call?
@@ -130,6 +130,16 @@ public class SwiftFlutterCallkitIncomingPlugin: NSObject, FlutterPlugin, CXProvi
             }
             
             self.muteCall(callId, isMuted: isMuted)
+            result("OK")
+            break
+        case "reportDeclinedCall":
+            guard let args = call.arguments as? [String: Any],
+                  let callID = args["id"] as? String else {
+                result("OK")
+                return
+            }
+            NSLog("report declined call from plugin")
+            self.saveEndCall(callID, 2)
             result("OK")
             break
         case "holdCall":
@@ -289,7 +299,7 @@ public class SwiftFlutterCallkitIncomingPlugin: NSObject, FlutterPlugin, CXProvi
         self.callManager.endCallAlls()
     }
     
-    public func saveEndCall(_ uuid: String, _ reason: Int) {
+    @objc public func saveEndCall(_ uuid: String, _ reason: Int) {
         switch reason {
         case 1:
             self.sharedProvider?.reportCall(with: UUID(uuidString: uuid)!, endedAt: Date(), reason: CXCallEndedReason.failed)
